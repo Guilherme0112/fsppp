@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Tarefa\Quadro;
+use App\Models\Tarefa\Tarefa;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -13,11 +15,7 @@ class Usuario extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+
     protected $fillable = [
         'nome',
         'email',
@@ -45,5 +43,15 @@ class Usuario extends Authenticatable
             'email_verificado_em' => 'datetime',
             'senha' => 'hashed',
         ];
+    }
+
+    public function quadros(): BelongsToMany
+    {
+        return $this->belongsToMany(Quadro::class);
+    }
+
+    public function tarefas(): BelongsToMany
+    {
+        return $this->belongsToMany(Tarefa::class);
     }
 }
