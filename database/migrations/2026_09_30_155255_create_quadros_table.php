@@ -10,8 +10,11 @@ return new class extends Migration {
         Schema::create('quadros', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->text('descricao');
-            $table->timestamps();
+            $table->text("descricao")->nullable();
+            $table->foreignId('usuario_id')->constrained("usuarios")->cascadeOnDelete();
+            $table->timestamp('criado_em')->nullable();
+            $table->timestamp('atualizado_em')->nullable();
+            $table->softDeletes('apagado_em')->nullable();
         });
     }
 

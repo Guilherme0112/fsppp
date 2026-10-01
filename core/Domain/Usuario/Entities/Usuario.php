@@ -1,17 +1,18 @@
 <?php
 
-namespace Core\Domain\Tarefa\Entities;
+namespace Core\Domain\Usuario\Entities;
 
-class Quadro
+class Usuario
 {
     public function __construct(
         private readonly ?int $id,
         private readonly string $nome,
-        private readonly int $usuario_id,
-        private readonly ?string $descricao = null,
+        private readonly string $email,
+        private readonly string $senha,
+        private readonly ?\DateTimeImmutable $email_verificado_em = null,
+        private readonly ?string $remember_token = null,
         private readonly ?\DateTimeImmutable $criado_em = null,
         private readonly ?\DateTimeImmutable $atualizado_em = null,
-        private readonly ?\DateTimeImmutable $apagado_em = null,
     ) {
     }
 }

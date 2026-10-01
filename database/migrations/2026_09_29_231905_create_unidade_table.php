@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('cnpj');
+            $table->foreignId("usuario_id")->constrained("usuarios")->cascadeOnDelete();
             $table->morphs('enderecoable');
-            $table->timestamps();
+            $table->timestamp('criado_em')->nullable();
+            $table->timestamp('atualizado_em')->nullable();
+            $table->softDeletes('apagado_em')->nullable();
         });
     }
 

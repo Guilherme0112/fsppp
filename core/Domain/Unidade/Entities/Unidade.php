@@ -1,17 +1,13 @@
 <?php
 
-namespace Core\Domain\Tarefa\Entities;
+namespace Core\Domain\Unidade\Entities;
 
-class Tarefa
+class Unidade
 {
     public function __construct(
         private readonly ?int $id,
         private readonly string $nome,
-        private readonly int $status_id,
-        private readonly int $quadro_id,
-        private readonly ?string $descricao = null,
-        private readonly ?\DateTimeImmutable $data_inicio = null,
-        private readonly ?\DateTimeImmutable $data_fim = null,
+        private readonly string $cnpj,
         private readonly ?\DateTimeImmutable $criado_em = null,
         private readonly ?\DateTimeImmutable $atualizado_em = null,
         private readonly ?\DateTimeImmutable $apagado_em = null,

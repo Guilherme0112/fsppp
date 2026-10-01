@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Unidade extends Model
+class Unidade extends ModelBase
 {
     protected $fillable = [
         "nome",

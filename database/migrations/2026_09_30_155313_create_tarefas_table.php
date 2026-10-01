@@ -10,10 +10,12 @@ return new class extends Migration {
         Schema::create('tarefas', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->text('descricao');
+            $table->text("descricao")->nullable();
             $table->foreignId('quadro_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('usuario_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
+            $table->foreignId('usuario_id')->constrained("usuarios")->cascadeOnDelete();
+            $table->timestamp('criado_em')->nullable();
+            $table->timestamp('atualizado_em')->nullable();
+            $table->softDeletes("apagado_em")->nullable();
         });
     }
 
