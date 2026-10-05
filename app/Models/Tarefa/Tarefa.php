@@ -43,6 +43,6 @@ class Tarefa extends ModelBase
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(StatusTarefa::class, "status_id", "status_tarefa_id");
+        return $this->belongsTo(StatusQuadro::class, "status_id", "status_tarefa_id");
     }
 }

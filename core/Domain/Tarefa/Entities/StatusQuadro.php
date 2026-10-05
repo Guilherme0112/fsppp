@@ -2,10 +2,10 @@
 
 namespace Core\Domain\Tarefa\Entities;
 
-class StatusTarefa
+class StatusQuadro
 {
     public function __construct(
-        private readonly ?int $status_tarefa_id,
+        private readonly ?int $id,
         private readonly string $nome,
         private readonly ?\DateTimeImmutable $criado_em = null,
         private readonly ?\DateTimeImmutable $atualizado_em = null,

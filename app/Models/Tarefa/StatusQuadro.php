@@ -4,10 +4,9 @@ namespace App\Models\Tarefa;
 
 use App\Models\ModelBase;
 
-class StatusTarefa extends ModelBase
+class StatusQuadro extends ModelBase
 {
-    protected $table = "status_tarefas";
-    protected $primaryKey = "status_tarefa_id";
+    protected $table = "status_quadro";
     protected $fillable = [
         "nome",
     ];
