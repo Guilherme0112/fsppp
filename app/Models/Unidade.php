@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-
 class Unidade extends ModelBase
 {
     protected $fillable = [
-        "nome",
-        "cnpj"
+        'nome',
+        'cnpj',
     ];
 
     public function endereco()

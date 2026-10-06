@@ -12,7 +12,9 @@ return new class extends Migration {
             $table->string('nome');
             $table->text("descricao")->nullable();
             $table->foreignId('quadro_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('usuario_id')->constrained("usuarios")->cascadeOnDelete();
+            $table->foreignId('status_id');
+            $table->timestamp('data_inicio')->nullable();
+            $table->timestamp('data_fim')->nullable();
             $table->timestamp('criado_em')->nullable();
             $table->timestamp('atualizado_em')->nullable();
             $table->softDeletes("apagado_em")->nullable();

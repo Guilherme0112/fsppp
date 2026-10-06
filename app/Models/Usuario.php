@@ -4,17 +4,21 @@ namespace App\Models;
 
 use App\Models\Tarefa\Quadro;
 use App\Models\Tarefa\Tarefa;
-use Database\Factories\UserFactory;
+use Database\Factories\UsuarioFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<UsuarioFactory> */
+    use HasApiTokens, HasFactory, Notifiable;
 
+    public const CREATED_AT = 'criado_em';
+
+    public const UPDATED_AT = 'atualizado_em';
 
     protected $fillable = [
         'nome',
@@ -41,6 +45,8 @@ class Usuario extends Authenticatable
     {
         return [
             'email_verificado_em' => 'datetime',
+            'criado_em' => 'datetime',
+            'atualizado_em' => 'datetime',
             'senha' => 'hashed',
         ];
     }

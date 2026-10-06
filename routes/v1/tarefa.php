@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Tarefa\QuadroController;
 use App\Http\Controllers\Tarefa\StatusQuadroController;
 use App\Http\Controllers\Tarefa\TarefaController;
-use App\Http\Controllers\Tarefa\QuadroController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/tarefas')->group(function () {

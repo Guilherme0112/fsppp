@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Middleware\ForcarRespostaJson;
+use Core\Domain\Tarefa\Exceptions\RecursoNaoEncontradoException;
+use Core\Domain\Usuario\Exceptions\CredenciaisInvalidasException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,8 +19,24 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->prependToGroup('api', ForcarRespostaJson::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->shouldRenderJsonWhen(function (Request $request): bool {
+            return $request->is('api/*') || $request->expectsJson();
+        });
+
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json(['mensagem' => 'Não autenticado.'], 401);
+            }
+        });
+
+        $exceptions->render(function (CredenciaisInvalidasException $exception) {
+            return response()->json(['mensagem' => $exception->getMessage()], 401);
+        });
+
+        $exceptions->render(function (RecursoNaoEncontradoException $exception) {
+            return response()->json(['mensagem' => $exception->getMessage()], 404);
+        });
     })->create();
