@@ -13,29 +13,36 @@ class StatusQuadroEloquentRepository implements StatusQuadroRepository
 
     public function listarPorQuadroId(int $quadroId): array
     {
-        return StatusQuadroModelo::query()->where('quadro_id', $quadroId)->get()
-            ->map(fn (StatusQuadroModelo $modelo): StatusQuadro => $this->mapeador->paraEntidade($modelo))->all();
+        return StatusQuadroModelo::query()
+            ->where('quadro_id', $quadroId)
+            ->paginate(20)
+            ->through(fn (StatusQuadroModelo $modelo): StatusQuadro => $this->mapeador->paraEntidade($modelo))
+            ->toArray();
     }
 
     public function criar(StatusQuadro $statusQuadro): StatusQuadro
     {
-        $modelo = $this->mapeador->paraModelo($statusQuadro);
-        $modelo->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($statusQuadro) {
+            $modelo = $this->mapeador->paraModelo($statusQuadro);
+            $modelo->create($statusQuadro->paraArray());
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function atualizar(int $id, StatusQuadro $statusQuadro): StatusQuadro
     {
-        $modelo = StatusQuadroModelo::query()->findOrFail($id);
-        $this->mapeador->paraModelo($statusQuadro, $modelo)->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($id, $statusQuadro) {
+            $modelo = StatusQuadroModelo::query()->findOrFail($id);
+            $this->mapeador->paraModelo($statusQuadro, $modelo)->update();
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function apagar(int $id): void
     {
-        StatusQuadroModelo::query()->findOrFail($id)->delete();
+        \DB::transaction(function () use ($id) {
+            StatusQuadroModelo::query()->findOrFail($id)->delete();
+        });
     }
 
     public function pertenceAoUsuario(int $id, int $usuarioId): bool

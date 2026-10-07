@@ -13,29 +13,36 @@ class QuadroEloquentRepository implements QuadroRepository
 
     public function listarPorUsuarioId(int $usuarioId): array
     {
-        return QuadroModelo::query()->where('usuario_id', $usuarioId)->get()
-            ->map(fn (QuadroModelo $modelo): Quadro => $this->mapeador->paraEntidade($modelo))->all();
+        return QuadroModelo::query()
+            ->where('usuario_id', $usuarioId)
+            ->paginate(20)
+            ->through(fn (QuadroModelo $modelo): Quadro => $this->mapeador->paraEntidade($modelo))
+            ->toArray();
     }
 
     public function criar(Quadro $quadro): Quadro
     {
-        $modelo = $this->mapeador->paraModelo($quadro);
-        $modelo->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($quadro) {
+            $modelo = $this->mapeador->paraModelo($quadro);
+            $modelo->create($quadro->paraArray());
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function atualizar(int $id, Quadro $quadro): Quadro
     {
-        $modelo = QuadroModelo::query()->findOrFail($id);
-        $this->mapeador->paraModelo($quadro, $modelo)->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($id, $quadro) {
+            $modelo = QuadroModelo::query()->findOrFail($id);
+            $this->mapeador->paraModelo($quadro, $modelo)->update();
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function apagar(int $id): void
     {
-        QuadroModelo::query()->findOrFail($id)->delete();
+        \DB::transaction(function () use ($id) {
+            QuadroModelo::query()->findOrFail($id)->delete();
+        });
     }
 
     public function pertenceAoUsuario(int $id, int $usuarioId): bool

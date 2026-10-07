@@ -51,7 +51,6 @@ class TarefaController extends Controller
         ApagarTarefaUseCase $casoDeUso,
     ): JsonResponse {
         $casoDeUso->executar($id, $requisicao->usuarioId());
-
         return response()->json(null, 204);
     }
 }

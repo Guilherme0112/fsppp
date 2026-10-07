@@ -13,38 +13,45 @@ class TarefaEloquentRepository implements TarefaRepository
 
     public function listarPorQuadroId(int $quadroId): array
     {
-        return TarefaModelo::query()->where('quadro_id', $quadroId)->get()
-            ->map(fn (TarefaModelo $modelo): Tarefa => $this->mapeador->paraEntidade($modelo))->all();
+        return TarefaModelo::query()
+            ->where('quadro_id', $quadroId)
+            ->paginate(20)
+            ->through(fn (TarefaModelo $modelo): Tarefa => $this->mapeador->paraEntidade($modelo))
+            ->toArray();
     }
 
     public function listarPorUsuarioId(int $usuarioId): array
     {
         return TarefaModelo::query()
             ->whereHas('quadro', fn ($consulta) => $consulta->where('usuario_id', $usuarioId))
-            ->get()
-            ->map(fn (TarefaModelo $modelo): Tarefa => $this->mapeador->paraEntidade($modelo))->all();
+            ->paginate(20)
+            ->through(fn (TarefaModelo $modelo): Tarefa => $this->mapeador->paraEntidade($modelo))
+            ->toArray();
     }
 
     public function criar(int $quadroId, Tarefa $tarefa): Tarefa
     {
-        $modelo = $this->mapeador->paraModelo($tarefa);
-        $modelo->quadro_id = $quadroId;
-        $modelo->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($quadroId, $tarefa) {
+            $modelo = $this->mapeador->paraModelo($tarefa);
+            $modelo->create([...$tarefa->paraArray(), 'quadro_id' => $quadroId]);
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function atualizar(int $id, Tarefa $tarefa): Tarefa
     {
-        $modelo = TarefaModelo::query()->findOrFail($id);
-        $this->mapeador->paraModelo($tarefa, $modelo)->save();
-
-        return $this->mapeador->paraEntidade($modelo->refresh());
+        return \DB::transaction(function () use ($id, $tarefa) {
+            $modelo = TarefaModelo::query()->findOrFail($id);
+            $this->mapeador->paraModelo($tarefa, $modelo)->update();
+            return $this->mapeador->paraEntidade($modelo->refresh());
+        });
     }
 
     public function apagar(int $id): void
     {
-        TarefaModelo::query()->findOrFail($id)->delete();
+        \DB::transaction(function () use ($id) {
+            TarefaModelo::query()->findOrFail($id)->delete();
+        });
     }
 
     public function pertenceAoUsuario(int $id, int $usuarioId): bool
